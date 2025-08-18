@@ -1,25 +1,96 @@
-# 📚 PROMETRIC AUTHENTICATION SYSTEM DOCUMENTATION
+# 📚 PROMETRIC PLATFORM DOCUMENTATION
 
-## 🏗️ Архитектура системы авторизации
+## 🏗️ Полная документация ERP платформы Prometric
 
-Система авторизации Prometric построена на многоэтапном процессе регистрации с верификацией email и ролевой моделью доступа.
+Prometric — это комплексная ERP платформа для управления бизнесом, включающая модули управления персоналом, финансами, производством, продажами и аналитикой. Система построена на современной архитектуре с микросервисами и поддержкой множественных рабочих пространств.
 
 ## 📁 Структура документации
 
 ```
 documentation/
-├── auth-flows/              # Описание всех процессов авторизации
-│   ├── owner-registration/  # Регистрация владельца организации
-│   ├── employee-registration/ # Регистрация сотрудника
-│   ├── login-authentication/  # Процесс входа в систему
-│   ├── password-management/   # Управление паролями
-│   └── role-management/       # Управление ролями
-├── api-endpoints/           # Документация API эндпоинтов
-│   └── ... (такая же структура)
-└── test-scripts/           # Тестовые скрипты для каждого flow
-    └── ... (такая же структура)
+├── 🔐 auth-flows/              # Система авторизации и аутентификации
+│   ├── owner-registration/     # Регистрация владельца организации  
+│   ├── employee-registration/  # Регистрация сотрудников
+│   ├── login-authentication/   # Процесс входа в систему
+│   ├── password-management/    # Восстановление и смена паролей
+│   └── role-management/        # Управление ролями и правами доступа
+├── 👥 hr-management/           # Модуль управления персоналом
+│   ├── employee-onboarding/    # Процесс найма и адаптации
+│   ├── payroll-system/         # Система расчета зарплат
+│   ├── performance-tracking/   # Отслеживание эффективности
+│   └── department-structure/   # Организационная структура
+├── 💰 finance-module/          # Финансовый модуль
+│   ├── invoicing-system/       # Система выставления счетов
+│   ├── payment-processing/     # Обработка платежей
+│   ├── financial-reports/      # Финансовая отчетность
+│   └── budget-management/      # Управление бюджетом
+├── 🏭 production-module/       # Производственный модуль  
+│   ├── work-orders/            # Производственные заказы
+│   ├── inventory-management/   # Управление складом
+│   ├── quality-control/        # Контроль качества
+│   └── production-planning/    # Планирование производства
+├── 📊 analytics-dashboard/     # Система аналитики и дашбордов
+│   ├── metrics-system/         # Система метрик и KPI
+│   ├── real-time-monitoring/   # Мониторинг в реальном времени
+│   ├── performance-cache/      # Оптимизация производительности
+│   └── reporting-engine/       # Движок отчетности
+├── 🛒 sales-module/           # Модуль продаж и CRM
+│   ├── lead-management/        # Управление лидами
+│   ├── deal-pipeline/          # Воронка продаж
+│   ├── customer-relations/     # Управление клиентами  
+│   └── sales-analytics/        # Аналитика продаж
+├── 📡 api-endpoints/          # Документация API
+│   ├── authentication/         # API авторизации
+│   ├── user-management/        # API управления пользователями
+│   ├── workspace-api/          # API рабочих пространств
+│   ├── finance-api/            # API финансов
+│   ├── production-api/         # API производства
+│   └── analytics-api/          # API аналитики
+└── 🧪 test-scripts/           # Скрипты тестирования
+    ├── auth-testing/           # Тесты авторизации
+    ├── api-integration/        # Интеграционное тестирование
+    ├── performance-tests/      # Тесты производительности
+    └── end-to-end-tests/       # E2E тестирование
 ```
 
+
+## 🚀 Основные модули платформы Prometric
+
+### 🔐 Система авторизации и безопасности
+- **Многоуровневая аутентификация** с email верификацией
+- **Ролевая модель доступа** (Owner, Manager, Employee, User)
+- **JWT токены** с refresh механизмом
+- **Session management** и безопасность API
+
+### 👥 HR Management (Управление персоналом)
+- **Employee onboarding** - процесс найма и адаптации
+- **Payroll system** - расчет зарплат и бонусов
+- **Performance tracking** - система KPI и оценки
+- **Department structure** - организационная структура
+
+### 💰 Finance Module (Финансовый модуль)
+- **Invoicing system** - выставление и отслеживание счетов
+- **Payment processing** - обработка платежей и транзакций
+- **Financial reports** - финансовая отчетность
+- **Budget management** - планирование и контроль бюджета
+
+### 🏭 Production Module (Производственный модуль)
+- **Work orders** - управление производственными заказами
+- **Inventory management** - складской учет
+- **Quality control** - контроль качества продукции
+- **Production planning** - планирование производства
+
+### 📊 Analytics & Dashboard (Аналитика и дашборды)
+- **Real-time metrics** - метрики в реальном времени
+- **Performance monitoring** - мониторинг производительности
+- **Custom dashboards** - настраиваемые дашборды
+- **Reporting engine** - движок отчетности
+
+### 🛒 Sales & CRM (Продажи и управление клиентами)
+- **Lead management** - управление лидами
+- **Deal pipeline** - воронка продаж
+- **Customer relations** - CRM система
+- **Sales analytics** - аналитика продаж
 
 ## 🔐 Основные роли в системе
 
