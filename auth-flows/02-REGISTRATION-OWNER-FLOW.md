@@ -25,8 +25,8 @@ Content-Type: application/json
   "firstName": "Асылбек",
   "lastName": "Нурланов",
   "phoneNumber": "+77012345678"
-  // role, companyName, bin НЕ передаются на этом этапе!
-  // Они будут переданы в onboarding/complete
+  // НЕ ПЕРЕДАВАТЬ role, companyName, bin на этом этапе!
+  // Они вызывают ошибки если переданы здесь
 }
 ```
 
@@ -173,16 +173,16 @@ Content-Type: application/json
 ```http
 POST http://localhost:5001/api/v1/auth/registration/onboarding/complete
 Content-Type: application/json
-Authorization: Bearer {token_from_verify_email}
 
 {
   "email": "owner_test_1755882547@mybusiness.kz",
-  "userId": "e918d6de-9d72-4dc6-b223-96cf13a73bfc",
   "selectedRole": "owner",  // ⚠️ ОБЯЗАТЕЛЬНО! Без этого будет ошибка 400
-  "companyName": "ТОО Успешный Бизнес Новый",
-  "companyBin": "987654321098",  // ⚠️ ОБЯЗАТЕЛЬНО 12 цифр! Уникальный!
-  "companyType": "ТОО",
-  "industry": "IT"
+  "companyInfo": {           // ⚠️ ОБЯЗАТЕЛЬНО вложенный объект!
+    "companyName": "ТОО Успешный Бизнес Новый",
+    "bin": "987654321098",   // ⚠️ ОБЯЗАТЕЛЬНО ровно 12 цифр! Уникальный!
+    "companyType": "ТОО",
+    "industry": "IT"
+  }
 }
 ```
 
@@ -284,10 +284,10 @@ Authorization: Bearer {token_from_verify_email}
 
 ## 📝 Примеры использования в коде
 
-### JavaScript/TypeScript - Полный flow
+### JavaScript/TypeScript - Полный flow (ИСПРАВЛЕННЫЙ)
 ```typescript
 async function registerOwner() {
-  // Шаг 1: Pre-registration
+  // Шаг 1: Pre-registration (БЕЗ role, companyName, bin!)
   const preRegResponse = await fetch('http://localhost:5001/api/v1/auth/registration/pre-register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -296,22 +296,19 @@ async function registerOwner() {
       password: "SecurePass123!",
       firstName: "Асылбек",
       lastName: "Нурланов",
-      phone: "+77012345678",
-      role: "owner",
-      companyName: "ТОО Моя Компания",
-      bin: "123456789012",
-      companyType: "ТОО",
-      industry: "IT"
+      phoneNumber: "+77012345678"
+      // НЕ ПЕРЕДАВАТЬ role, companyName, bin здесь!
     })
   });
   
   const preRegData = await preRegResponse.json();
   const userId = preRegData.data.userId;
   
-  // Шаг 2: Получить код из email (или из БД для тестирования)
-  const verificationCode = await getVerificationCode(); // "287645"
+  // Шаг 2: Получить код из БД (email не работает)
+  // В production нужно будет получать из email
+  const verificationCode = "123456"; // или из БД
   
-  // Шаг 3: Verify email
+  // Шаг 3: Verify email (игнорируйте success: false)
   const verifyResponse = await fetch('http://localhost:5001/api/v1/auth/registration/verify-email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -321,27 +318,28 @@ async function registerOwner() {
     })
   });
   
-  // Шаг 4: Complete onboarding
+  // Шаг 4: Complete onboarding с правильной структурой
   const onboardingResponse = await fetch('http://localhost:5001/api/v1/auth/registration/onboarding/complete', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       email: "owner@company.kz",
-      userId: userId,
       selectedRole: "owner",
-      companyName: "ТОО Моя Компания",
-      bin: "123456789012",
-      companyType: "ТОО",
-      industry: "IT"
+      companyInfo: {  // ⚠️ Вложенный объект!
+        companyName: "ТОО Моя Компания",
+        bin: "123456789012",  // Ровно 12 цифр!
+        companyType: "ТОО",
+        industry: "IT"
+      }
     })
   });
   
   const onboardingData = await onboardingResponse.json();
   
-  // Сохраняем данные
+  // Сохраняем данные (workspaceId может быть null - это баг)
   localStorage.setItem('accessToken', onboardingData.accessToken);
   localStorage.setItem('organizationId', onboardingData.organizationId);
-  localStorage.setItem('workspaceId', onboardingData.workspaceId);
+  localStorage.setItem('workspaceId', onboardingData.workspaceId || '');
   
   // Redirect на dashboard
   window.location.href = '/dashboard';

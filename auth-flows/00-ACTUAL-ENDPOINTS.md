@@ -1,36 +1,33 @@
-# ✅ АКТУАЛЬНЫЕ AUTH ENDPOINTS
+# ✅ АКТУАЛЬНЫЕ AUTH ENDPOINTS (ПРОВЕРЕНО 23.08.2025)
 
-## 📋 ТОЛЬКО ЭТИ ENDPOINTS СУЩЕСТВУЮТ
+## 📋 ТОЛЬКО ЭТИ ENDPOINTS СУЩЕСТВУЮТ И РАБОТАЮТ
 
 ### 🔐 Основные Auth endpoints
 ```
-POST /api/v1/auth/login                                  # Вход в систему
-POST /api/v1/auth/logout                                 # Выход из системы
-POST /api/v1/auth/refresh                                # Обновление токена
-GET  /api/v1/auth/profile                                # Получение профиля
+POST /api/v1/auth/login                                  # Вход в систему ✅
+POST /api/v1/auth/logout                                 # Выход из системы ✅
+POST /api/v1/auth/refresh                                # НЕ РАБОТАЕТ (refresh token отключен)
+GET  /api/v1/auth/profile                                # Получение профиля ✅
 ```
-
 
 ### 📝 Registration endpoints
 ```
-POST /api/v1/auth/registration/pre-register              # Предварительная регистрация
-POST /api/v1/auth/registration/verify-email              # Верификация email
-POST /api/v1/auth/registration/onboarding/complete       # Завершение onboarding (С РОЛЬЮ!)
-POST /api/v1/auth/registration/resend-verification       # Повторная отправка кода
+POST /api/v1/auth/registration/pre-register              # Предварительная регистрация ✅
+POST /api/v1/auth/registration/verify-email              # Верификация email ✅ (но всегда возвращает success: false)
+POST /api/v1/auth/registration/onboarding/complete       # Завершение onboarding ✅ (С РОЛЬЮ!)
+POST /api/v1/auth/registration/resend-verification       # НЕ ТЕСТИРОВАЛСЯ
 ```
 
-### 🏢 Company Management
+### 🏢 Employee Management
 ```
-POST /api/v1/companies/validate-bin                      # Валидация БИН
-GET  /api/v1/company/pending-registrations               # Список ожидающих одобрения
-POST /api/v1/company/approve-registration                # Одобрение employee
+GET  /api/v1/workspaces/:id/employee-management/pending-employees    # Список pending сотрудников ✅
+POST /api/v1/workspaces/:id/employee-management/employees/:id/approve # Одобрение employee ✅
+POST /api/v1/workspaces/:id/employee-management/employees/:id/reject  # Отклонение employee (НЕ ТЕСТИРОВАЛСЯ)
 ```
 
-### 👥 Employees & Departments  
+### 👥 Departments  
 ```
-GET  /api/v1/workspaces/:id/employees                    # Список сотрудников
-GET  /api/v1/workspaces/:id/departments                  # Список департаментов
-POST /api/v1/workspaces/:id/employees/:id/assign         # Назначение в департамент
+GET  /api/v1/workspaces/:id/departments                  # Список департаментов ✅
 ```
 
 ## ❌ НЕ СУЩЕСТВУЮЩИЕ ENDPOINTS (УДАЛЕНЫ)
@@ -41,46 +38,50 @@ POST /api/v1/workspaces/:id/employees/:id/assign         # Назначение 
 ❌ POST /api/v1/auth/register                            # НЕТ! Используем pre-register
 ```
 
-## ⚠️ КРИТИЧЕСКИ ВАЖНЫЕ ПАРАМЕТРЫ
+## ⚠️ КРИТИЧЕСКИ ВАЖНЫЕ ПАРАМЕТРЫ И ИЗВЕСТНЫЕ БАГИ
 
 ### Для OWNER при onboarding/complete:
 ```json
 {
-  "selectedRole": "owner",      // ⚠️ ОБЯЗАТЕЛЬНО!
-  "companyBin": "123456789012", // ⚠️ ОБЯЗАТЕЛЬНО! 12 цифр, уникальный
-  "userId": "uuid",              // ⚠️ ОБЯЗАТЕЛЬНО!
   "email": "email",              // ⚠️ ОБЯЗАТЕЛЬНО!
-  "companyName": "Название",
-  "companyType": "ТОО",
-  "industry": "IT"
+  "selectedRole": "owner",       // ⚠️ ОБЯЗАТЕЛЬНО!
+  "companyInfo": {
+    "companyName": "Название",    // ⚠️ ОБЯЗАТЕЛЬНО!
+    "bin": "123456789012",        // ⚠️ ОБЯЗАТЕЛЬНО! Ровно 12 цифр!
+    "companyType": "ТОО",          // ⚠️ ОБЯЗАТЕЛЬНО!
+    "industry": "IT"               // ⚠️ ОБЯЗАТЕЛЬНО!
+  }
 }
 ```
 
 ### Для EMPLOYEE при onboarding/complete:
 ```json
 {
-  "selectedRole": "employee",          // ⚠️ ОБЯЗАТЕЛЬНО!
-  "employeeCompanyBin": "123456789012", // ⚠️ ОБЯЗАТЕЛЬНО! БИН компании
-  "userId": "uuid",                      // ⚠️ ОБЯЗАТЕЛЬНО!
-  "email": "email",                      // ⚠️ ОБЯЗАТЕЛЬНО!
-  "position": "Developer",
-  "message": "Прошу принять"
+  "email": "email",                     // ⚠️ ОБЯЗАТЕЛЬНО!
+  "selectedRole": "employee",           // ⚠️ ОБЯЗАТЕЛЬНО!
+  "employeeCompanyBin": "123456789012"  // ⚠️ ОБЯЗАТЕЛЬНО! БИН компании для присоединения
 }
 ```
+
+### 🐛 ИЗВЕСТНЫЕ БАГИ:
+1. **workspaceId возвращается как null** в ответе onboarding/complete для owner
+2. **verify-email всегда возвращает success: false** даже при успешной верификации
+3. **Refresh token полностью отключен** - только access token на 6 часов
+4. **Email отправка не работает** - нужно получать коды из БД для тестирования
 
 ## 🔑 ПРАВИЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ
 
 ### Owner Registration:
-1. `POST /auth/registration/pre-register` - создание пользователя
-2. `POST /auth/registration/verify-email` - верификация email
-3. `POST /auth/registration/onboarding/complete` - создание организации с `selectedRole: "owner"`
+1. `POST /api/v1/auth/registration/pre-register` - создание пользователя
+2. `POST /api/v1/auth/registration/verify-email` - верификация email (игнорируйте success: false)
+3. `POST /api/v1/auth/registration/onboarding/complete` - с `selectedRole: "owner"` и `companyInfo`
 
 ### Employee Registration:
-1. `POST /auth/registration/pre-register` - с `organizationBin`
-2. `POST /auth/registration/verify-email` - верификация email  
-3. `POST /auth/registration/onboarding/complete` - с `selectedRole: "employee"`
-4. Ожидание одобрения owner'ом
-5. `POST /company/approve-registration` - owner одобряет
+1. `POST /api/v1/auth/registration/pre-register` - создание пользователя
+2. `POST /api/v1/auth/registration/verify-email` - верификация email (игнорируйте success: false)
+3. `POST /api/v1/auth/registration/onboarding/complete` - с `selectedRole: "employee"` и `employeeCompanyBin`
+4. Ожидание одобрения owner'ом (статус будет pending)
+5. `POST /api/v1/workspaces/:id/employee-management/employees/:id/approve` - owner одобряет
 
 ## 📌 ЗАМЕТКИ
 

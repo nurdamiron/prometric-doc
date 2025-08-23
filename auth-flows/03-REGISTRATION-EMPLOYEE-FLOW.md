@@ -26,9 +26,9 @@ Content-Type: application/json
   "password": "EmployeePass123!",
   "firstName": "Айгуль",
   "lastName": "Смагулова",
-  "phoneNumber": "+77017654321",
-  "organizationBin": "987654321098"  // ⚠️ БИН компании для присоединения
-  // role, companyName НЕ передаются на этом этапе
+  "phoneNumber": "+77017654321"
+  // НЕ ПЕРЕДАВАТЬ role, organizationBin, companyName здесь!
+  // Они вызывают ошибки если переданы на этом этапе
 }
 ```
 
@@ -128,12 +128,9 @@ Content-Type: application/json
 
 {
   "email": "employee_1755885515@mail.kz",
-  "userId": "7d103ddc-2f02-46df-90ae-f769d5950c20",
-  "selectedRole": "employee",
-  "companyName": "ТОО Успешный Бизнес Новый",
-  "bin": "987654321098",
-  "companyType": "ТОО",
-  "industry": "IT"
+  "selectedRole": "employee",              // ⚠️ ОБЯЗАТЕЛЬНО!
+  "employeeCompanyBin": "987654321098"     // ⚠️ ОБЯЗАТЕЛЬНО! БИН компании для присоединения (ровно 12 цифр)
+  // НЕ передавать userId, companyName, companyType, industry
 }
 ```
 
@@ -296,11 +293,11 @@ Authorization: Bearer {OWNER_TOKEN}
 
 ## 📝 Примеры использования в коде
 
-### JavaScript/TypeScript - Employee Registration
+### JavaScript/TypeScript - Employee Registration (ИСПРАВЛЕННЫЙ)
 ```typescript
 async function registerEmployee() {
   try {
-    // Шаг 1: Pre-registration с БИН компании
+    // Шаг 1: Pre-registration (БЕЗ БИН и других данных компании!)
     const preRegResponse = await fetch('http://localhost:5001/api/v1/auth/registration/pre-register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -309,28 +306,22 @@ async function registerEmployee() {
         password: "SecurePass123!",
         firstName: "Айгуль",
         lastName: "Смагулова",
-        phone: "+77017654321",
-        role: "employee",
-        companyName: "ТОО Успешный Бизнес Новый",
-        bin: "987654321098",  // БИН существующей организации
-        companyType: "ТОО",
-        industry: "IT"
+        phoneNumber: "+77017654321"
+        // НЕ ПЕРЕДАВАТЬ role, bin, companyName здесь!
       })
     });
     
     const preRegData = await preRegResponse.json();
     
     if (!preRegData.success) {
-      if (preRegData.error.code === 'ORGANIZATION_NOT_FOUND') {
-        alert('Организация с указанным БИН не найдена');
-        return;
-      }
+      alert('Ошибка регистрации: ' + preRegData.error.message);
+      return;
     }
     
     const userId = preRegData.data.userId;
     
-    // Шаг 2: Verify email
-    const verificationCode = prompt('Введите код из email:');
+    // Шаг 2: Verify email (игнорируйте success: false)
+    const verificationCode = "123456"; // В production получать из email
     
     const verifyResponse = await fetch('http://localhost:5001/api/v1/auth/registration/verify-email', {
       method: 'POST',
@@ -340,25 +331,23 @@ async function registerEmployee() {
         code: verificationCode
       })
     });
+    // Игнорируем success: false - это баг
     
-    // Шаг 3: Complete onboarding
+    // Шаг 3: Complete onboarding с правильной структурой
     const onboardingResponse = await fetch('http://localhost:5001/api/v1/auth/registration/onboarding/complete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: "employee@mail.kz",
-        userId: userId,
         selectedRole: "employee",
-        companyName: "ТОО Успешный Бизнес Новый",
-        bin: "987654321098",
-        companyType: "ТОО",
-        industry: "IT"
+        employeeCompanyBin: "987654321098"  // БИН компании для присоединения (12 цифр!)
+        // НЕ передавать userId, companyName, etc
       })
     });
     
     const onboardingData = await onboardingResponse.json();
     
-    if (onboardingData.requiresApproval) {
+    if (onboardingData.status === 'pending') {
       alert('Ваша заявка отправлена на рассмотрение администратору');
       // Redirect на страницу ожидания
       window.location.href = '/auth/pending-approval';

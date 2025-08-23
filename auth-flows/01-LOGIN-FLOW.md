@@ -261,3 +261,4 @@ Body (raw JSON):
 - `/api/v1/auth/logout` - Выход из системы
 - `/api/v1/auth/profile` - Получение профиля текущего пользователя
 - `/api/v1/auth/forgot-password` - Восстановление пароля
+
