@@ -6,7 +6,9 @@ Owner registration flow - это процесс регистрации влад�
 ## 🎯 Последовательность шагов
 1. Pre-registration (создание пользователя)
 2. Email verification (подтверждение email)
-3. Onboarding completion (создание организации)
+3. Onboarding completion с selectedRole="owner" (создание организации)
+
+⚠️ **ВАЖНО**: Нет отдельного endpoint `/select-role`. Роль передается в параметре `selectedRole` при вызове `/onboarding/complete`
 
 ## 📊 Детальный процесс
 
@@ -22,12 +24,9 @@ Content-Type: application/json
   "password": "MySecurePass123!",
   "firstName": "Асылбек",
   "lastName": "Нурланов",
-  "phone": "+77012345678",
-  "role": "owner",
-  "companyName": "ТОО Успешный Бизнес Новый",
-  "bin": "987654321098",
-  "companyType": "ТОО",
-  "industry": "IT"
+  "phoneNumber": "+77012345678"
+  // role, companyName, bin НЕ передаются на этом этапе!
+  // Они будут переданы в onboarding/complete
 }
 ```
 
@@ -168,17 +167,20 @@ Content-Type: application/json
 
 ### ШАГ 3: Onboarding Completion (Завершение настройки)
 
+⚠️ **ВАЖНО**: Нет отдельного endpoint `/select-role`. Роль передается через `selectedRole` параметр!
+
 #### 📤 REQUEST
 ```http
 POST http://localhost:5001/api/v1/auth/registration/onboarding/complete
 Content-Type: application/json
+Authorization: Bearer {token_from_verify_email}
 
 {
   "email": "owner_test_1755882547@mybusiness.kz",
   "userId": "e918d6de-9d72-4dc6-b223-96cf13a73bfc",
-  "selectedRole": "owner",
+  "selectedRole": "owner",  // ⚠️ ОБЯЗАТЕЛЬНО! Без этого будет ошибка 400
   "companyName": "ТОО Успешный Бизнес Новый",
-  "bin": "987654321098",
+  "companyBin": "987654321098",  // ⚠️ ОБЯЗАТЕЛЬНО 12 цифр! Уникальный!
   "companyType": "ТОО",
   "industry": "IT"
 }

@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-08-23T00:35:06+05:00",
+  "owner": {
+    "email": "owner_deep_1755891296@prometric.kz",
+    "password": "SecureOwner123!",
+    "organizationId": "",
+    "workspaceId": "",
+    "companyBin": ""
+  },
+  "employee": {
+    "email": "employee_deep_1755891296@prometric.kz",
+    "password": "SecureEmployee123!",
+    "employeeId": "",
+    "departmentId": ""
+  },
+  "findings": {
+    "correctFlow": "pre-register → verify-email → onboarding/complete",
+    "noSelectRoleEndpoint": true,
+    "selectedRoleRequired": true,
+    "blockedCodes": ["123456", "000000", "111111", "999999"],
+    "nameValidation": "letters_only_no_digits"
+  }
+}

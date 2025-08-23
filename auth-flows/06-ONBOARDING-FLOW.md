@@ -3,6 +3,8 @@
 ## 📋 Общее описание
 Onboarding flow - это завершающий этап регистрации после верификации email. Различается для owner и employee ролей.
 
+⚠️ **ВАЖНО**: Не существует отдельного endpoint `/select-role`. Роль передается через обязательный параметр `selectedRole` в этом же запросе!
+
 ## 🎯 Endpoint
 ```
 POST /api/v1/auth/registration/onboarding/complete
@@ -28,13 +30,14 @@ POST /api/v1/auth/registration/onboarding/complete
 ```http
 POST http://localhost:5001/api/v1/auth/registration/onboarding/complete
 Content-Type: application/json
+Authorization: Bearer {token_from_verify_email}
 
 {
   "email": "owner_test_1755882547@mybusiness.kz",
   "userId": "e918d6de-9d72-4dc6-b223-96cf13a73bfc",
-  "selectedRole": "owner",
+  "selectedRole": "owner",  // ⚠️ ОБЯЗАТЕЛЬНО!
   "companyName": "ТОО Успешный Бизнес Новый",
-  "bin": "987654321098",
+  "companyBin": "987654321098",  // ОБЯЗАТЕЛЬНО 12 цифр!
   "companyType": "ТОО",
   "industry": "IT",
   "companyAddress": "г. Алматы, ул. Абая 150",

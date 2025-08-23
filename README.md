@@ -1,310 +1,111 @@
-# 📚 PROMETRIC PLATFORM DOCUMENTATION
+# 📚 Prometric ERP - Sales Modules Documentation
 
-## 🏗️ Полная документация ERP платформы Prometric
+## 🎯 Полная техническая документация модулей продаж
 
-Prometric — это комплексная ERP платформа для управления бизнесом, включающая модули управления персоналом, финансами, производством, продажами и аналитикой. Система построена на современной архитектуре с микросервисами и поддержкой множественных рабочих пространств.
+Эта документация содержит детальный анализ всех модулей продаж системы Prometric ERP, включая архитектуру, бизнес-логику, API endpoints, связи между модулями и интеграции.
 
-## 📁 Структура документации
+## 📂 Структура документации
 
-```
-prometric-doc/
-├── 🔐 auth-flows/                      # Детальная документация всех auth flows
-│   ├── 01-LOGIN-FLOW.md               # Процесс входа с JWT структурой
-│   ├── 02-REGISTRATION-OWNER-FLOW.md  # Регистрация владельца с авто-департаментами
-│   ├── 03-REGISTRATION-EMPLOYEE-FLOW.md # Регистрация сотрудника через БИН
-│   ├── 04-EMAIL-VERIFICATION-FLOW.md  # Email верификация с security
-│   ├── 05-EMPLOYEE-APPROVAL-FLOW.md   # Одобрение сотрудников владельцем
-│   └── 06-ONBOARDING-FLOW.md          # Завершение настройки для owner/employee
-├── 👥 hr-management/                   # Модуль управления персоналом
-├── 💰 finance-module/                  # Финансовый модуль
-├── 🏭 production-module/               # Производственный модуль
-├── 📊 analytics-dashboard/             # Система аналитики
-├── 🛒 sales-module/                    # Модуль продаж и CRM
-└── 🧪 test-scripts/                    # Скрипты тестирования
-    ├── test-full-flow.sh               # Полное тестирование
-    ├── owner-registration/             # Тесты регистрации owner
-    ├── employee-registration/          # Тесты регистрации employee
-    └── login-authentication/           # Тесты авторизации
-```
+### 📦 [/sales-modules](./sales-modules/README.md)
+Детальная документация каждого модуля продаж:
+- **[Products Module](./sales-modules/products/README.md)** - Управление продуктами, материалами и услугами
+- **[Customers Module](./sales-modules/customers/README.md)** - CRM функционал, управление клиентами
+- **[Deals Module](./sales-modules/deals/README.md)** - Управление сделками и pipeline
+- **[Orders Module](./sales-modules/orders/README.md)** - Обработка заказов и fulfillment
 
-## 🎯 Новая детальная документация Auth Flows
+### 🏗️ [/architecture](./architecture/README.md)
+Архитектурные решения и паттерны:
+- Event-Driven Architecture
+- Domain-Driven Design
+- Microservices patterns
+- Database design patterns
 
-### ✅ Полностью задокументированные flows (NEW!)
+### 🔗 [/integrations](./integrations/README.md)
+Интеграции между модулями:
+- Sales-Production интеграция
+- Customer-Deal-Order flow
+- Event orchestration
+- WebSocket real-time updates
 
-1. **[01-LOGIN-FLOW.md](./auth-flows/01-LOGIN-FLOW.md)** - Процесс входа в систему
-   - JWT token структура и декодирование
-   - Различия ответов для ролей (owner, employee, manager)
-   - Security features и известные проблемы
-   - Примеры кода на JavaScript/TypeScript, cURL, Postman
+### 📡 [/api-reference](./api-reference/README.md)
+Полный API Reference:
+- REST endpoints
+- Request/Response schemas
+- Authentication & Authorization
+- Error handling
 
-2. **[02-REGISTRATION-OWNER-FLOW.md](./auth-flows/02-REGISTRATION-OWNER-FLOW.md)** - Регистрация владельца
-   - Pre-registration с БИН валидацией
-   - Email верификация (получение кода из БД)
-   - Автоматическое создание 8 департаментов
-   - Onboarding completion с JWT токеном
+### 💼 [/business-logic](./business-logic/README.md)
+Бизнес-процессы и workflows:
+- Customer lifecycle
+- Deal pipeline stages
+- Order fulfillment process
+- Production triggers
 
-3. **[03-REGISTRATION-EMPLOYEE-FLOW.md](./auth-flows/03-REGISTRATION-EMPLOYEE-FLOW.md)** - Регистрация сотрудника
-   - Регистрация через БИН существующей компании
-   - Pending status после регистрации
-   - Блокировка входа до одобрения владельцем
-   - Различные статусы (pending, active, rejected)
-
-4. **[04-EMAIL-VERIFICATION-FLOW.md](./auth-flows/04-EMAIL-VERIFICATION-FLOW.md)** - Email верификация
-   - 6-значные коды с 15-минутным сроком
-   - Security: блокировка тестовых кодов (123456, 000000)
-   - Rate limiting и защита от брутфорса
-   - SQL запросы для получения кодов из БД
-
-5. **[05-EMPLOYEE-APPROVAL-FLOW.md](./auth-flows/05-EMPLOYEE-APPROVAL-FLOW.md)** - Одобрение сотрудников
-   - Получение списка pending employees
-   - Обязательное назначение в департамент
-   - Активация и предоставление workspace доступа
-   - Email уведомления (currently disabled)
-
-6. **[06-ONBOARDING-FLOW.md](./auth-flows/06-ONBOARDING-FLOW.md)** - Процесс onboarding
-   - Различия для owner (создание орг.) и employee (присоединение)
-   - Автоматические backend действия
-   - Создание workspace и департаментов
-   - Генерация JWT для активных пользователей
-
-## 🚀 Основные модули платформы
-
-### 🔐 Система авторизации и безопасности
-- **JWT Bearer tokens** (httpOnly cookies удалены)
-- **Ролевая модель** (Owner, Manager, Employee, User)
-- **Email верификация** с блокировкой тестовых кодов
-- **Multi-tenant isolation** через workspaces
-
-### 👥 HR Management
-- Employee onboarding с pending approval
-- Department management (8 авто-департаментов)
-- Performance tracking и KPI
-- Payroll system (в разработке)
-
-### 💰 Finance Module
-- Invoicing system
-- Payment processing
-- Financial reports
-- Budget management
-
-### 🏭 Production Module
-- Work orders management
-- Inventory control
-- Quality assurance
-- Production planning
-
-### 📊 Analytics & Dashboard
-- Real-time metrics
-- Custom dashboards
-- Performance monitoring
-- Reporting engine
-
-### 🛒 Sales & CRM
-- Lead management
-- Deal pipeline
-- Customer relations
-- Sales analytics
-
-### 🤖 AI Integration
-- **Google Vertex AI** (Gemini 1.5 Pro)
-- **Полностью функционален** ✅
-- Бизнес-консультации и аналитика
-
-## 🔑 JWT Token Structure
-
-```json
-{
-  "email": "owner_test_1755882547@mybusiness.kz",
-  "sub": "e918d6de-9d72-4dc6-b223-96cf13a73bfc",
-  "role": "owner",
-  "registrationStatus": "active",
-  "status": "active",
-  "organizationId": "c3446549-cb87-4f38-9ba6-d5bebbf8380a",
-  "workspaceId": "df082cb8-a880-448f-8abf-6d29e918e186",
-  "employeeId": null,
-  "onboardingCompleted": true,
-  "iat": 1755887488,
-  "exp": 1755909088,
-  "iss": "prometric-api"
-}
-```
-
-## 🔐 Основные роли в системе
-
-| Роль | Описание | Права доступа | Особенности |
-|------|----------|---------------|-------------|
-| **OWNER** | Владелец организации | Полный доступ | Одобрение сотрудников, управление департаментами |
-| **MANAGER** | Менеджер | Управление отделом | Ограниченный доступ к настройкам |
-| **EMPLOYEE** | Сотрудник | Базовый доступ | Требует одобрения при регистрации |
-| **USER** | Базовый пользователь | Временная роль | После регистрации до выбора роли |
-
-## 🌐 Базовые URL и подключения
-
-- **Backend API**: `http://localhost:5001/api/v1`
-- **Frontend**: `http://localhost:3000`
-- **PostgreSQL**: `prometric.cde42ec8m1u7.eu-north-1.rds.amazonaws.com`
-  ```bash
-  PGPASSWORD=prometric01 psql -h prometric.cde42ec8m1u7.eu-north-1.rds.amazonaws.com \
-    -U prometric -d prometric
-  ```
-
-## 🔄 Основные Authentication Flows
-
-### Owner Registration Flow
-```
-1. Pre-register (БИН валидация) → 2. Email Verify → 3. Onboarding → 4. Login (Active)
-```
-
-### Employee Registration Flow
-```
-1. Pre-register (БИН lookup) → 2. Email Verify → 3. Onboarding → 4. Pending → 5. Owner Approval → 6. Login
-```
-
-## ✅ Протестированные компоненты (из реальных тестов)
-
-### Работающие на 90%+
-- ✅ Owner registration с автоматическим созданием департаментов
-- ✅ Employee registration через БИН компании
-- ✅ Email verification (коды из БД)
-- ✅ Employee approval workflow
-- ✅ JWT authentication
-- ✅ AI service (Gemini 1.5 Pro)
-
-### Известные проблемы
-- ⚠️ SMTP service отключен (fake success)
-- ⚠️ Refresh tokens не реализованы
-- ⚠️ httpOnly cookies удалены
-- ⚠️ Deduplication service - только TODO
-- ⚠️ Rate limiting не настроен
-- ⚠️ Email templates отсутствуют
-
-## 🧪 Тестовые данные (из реальных тестов)
-
-### Тестовый Owner
-```javascript
-{
-  email: "owner_test_1755882547@mybusiness.kz",
-  password: "MySecurePass123!",
-  organization: "ТОО Успешный Бизнес Новый",
-  bin: "987654321098"
-}
-```
-
-### Тестовый Employee
-```javascript
-{
-  email: "employee_1755885515@mail.kz",
-  password: "EmployeePass123!",
-  status: "pending → active (после одобрения)",
-  department: "HR",
-  position: "Junior Developer"
-}
-```
-
-### Получение verification code из БД
-```bash
-PGPASSWORD=prometric01 psql -h prometric.cde42ec8m1u7.eu-north-1.rds.amazonaws.com \
-  -U prometric -d prometric -t \
-  -c "SELECT code FROM email_verifications WHERE email = 'test@email.com' ORDER BY created_at DESC LIMIT 1;"
-```
-
-## 📊 Database Schema
-
-### Users Table
-```sql
-CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    first_name VARCHAR(100),
-    last_name VARCHAR(100),
-    phone VARCHAR(20),
-    role VARCHAR(50) DEFAULT 'USER',
-    status VARCHAR(50) DEFAULT 'pending_verification',
-    registration_status VARCHAR(50) DEFAULT 'incomplete',
-    email_verified BOOLEAN DEFAULT false,
-    onboarding_completed BOOLEAN DEFAULT false,
-    organization_id UUID,
-    workspace_id UUID,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-### Email Verifications Table
-```sql
-CREATE TABLE email_verifications (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    code VARCHAR(6) NOT NULL,
-    expires_at TIMESTAMP NOT NULL,
-    verified BOOLEAN DEFAULT false,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
+### 🗄️ [/database-schemas](./database-schemas/README.md)
+Схемы базы данных:
+- Entity Relationship Diagrams
+- Indexes и оптимизации
+- Migrations
+- Data transformers
 
 ## 🚀 Quick Start
 
-### Запуск backend
-```bash
-cd prometric-backend
-npm run start:dev
-# Server: http://localhost:5001
+### Основные модули и их взаимосвязи
+
+```mermaid
+graph TD
+    A[Products] --> B[Deal Products]
+    C[Customers] --> D[Deals]
+    D --> E[Orders]
+    E --> F[Production Orders]
+    D --> B
+    E --> G[Delivery Orders]
+    F --> H[Quality Control]
 ```
 
-### Запуск frontend
-```bash
-cd prometric-platform
-npm run dev
-# App: http://localhost:3000
-```
+## 🔑 Ключевые особенности системы
 
-### Тестирование полного flow
-```bash
-cd test-scripts
-./test-full-flow.sh
-```
+1. **Multi-tenancy** - полная изоляция данных через workspaceId + organizationId
+2. **Event-Driven Architecture** - асинхронная обработка через EventEmitter2
+3. **Lazy Loading** - оптимизация производительности для связанных данных
+4. **Comprehensive Audit Trail** - полное логирование всех изменений
+5. **Redis Caching** - кеширование для высокой производительности
+6. **TypeORM Transactions** - надежность операций с БД
+7. **Kazakhstan Localization** - поддержка ИИН/БИН, местных платежных систем
 
-## 📈 Общая готовность системы: 65% (MEDIUM-HIGH)
+## 📊 Статистика системы
 
-### Модули по готовности
-| Модуль | Готовность | Статус |
-|--------|------------|--------|
-| Authentication | 90% | ✅ Working |
-| User Management | 95% | ✅ Working |
-| Organization Setup | 95% | ✅ Working |
-| Employee Management | 85% | ✅ Working |
-| Task Management | 40% | ⚠️ Partial |
-| Project Management | 10% | ❌ Not ready |
-| Finance Module | 30% | ❌ DB issues |
-| AI Integration | 95% | ✅ Working |
-| Security | 60% | ⚠️ Needs work |
+- **4 основных модуля продаж**
+- **45+ entities** 
+- **100+ API endpoints**
+- **15+ orchestrators**
+- **50+ event handlers**
+- **20+ интеграций между модулями**
 
-## 📝 Важные замечания
+## 🛠️ Технологический стек
 
-1. **Заблокированные тестовые коды**: 123456, 000000, 111111, 999999 не работают
-2. **БИН обязателен**: Сотрудники должны знать БИН организации
-3. **Department assignment обязателен**: При одобрении требуется departmentId
-4. **Workspace isolation**: Каждый департамент имеет свой workspace
-5. **JWT expiration**: 6 часов (refresh tokens отсутствуют)
+- **Backend:** NestJS 10.x, TypeScript 5.x
+- **Database:** PostgreSQL 14 (AWS RDS)
+- **Cache:** Redis
+- **Queue:** Bull (Redis-based)
+- **Real-time:** WebSockets (Socket.io)
+- **File Storage:** AWS S3
+- **Search:** Elasticsearch (optional)
 
-## 🔗 Полезные ссылки
+## 📝 Версионирование
 
-- [Детальные Auth Flows](./auth-flows/)
-- [Test Scripts Collection](./test-scripts/)
-- [HR Management Module](./hr-management/)
-- [Finance Module](./finance-module/)
-- [Production Module](./production-module/)
+- **Версия документации:** 1.0.0
+- **Дата создания:** 2025-08-23
+- **Автор:** Prometric Development Team
+- **Последнее обновление:** 2025-08-23
 
-## 📞 Контакты и поддержка
+## ⚠️ Важные замечания
 
-- **Backend Issues**: Проверяйте логи `npm run start:dev`
-- **Database Issues**: PostgreSQL на AWS RDS
-- **Frontend Issues**: Browser console для ошибок
-- **Documentation**: Этот репозиторий
+1. Все финансовые операции обрабатываются внутренними модулями
+2. Внешние банковские интеграции не используются
+3. Платежи принимаются через внутреннюю систему
+4. Все расчеты ведутся в KZT (тенге)
 
 ---
 
-*Последнее обновление: 22 августа 2025*
-*Версия документации: 2.0.0*
+© 2025 Prometric ERP. All rights reserved.
